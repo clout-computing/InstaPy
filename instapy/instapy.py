@@ -142,7 +142,7 @@ class InstaPy:
         self.photo_comments = []
         self.video_comments = []
 
-        self.do_reply_to_comments = False
+        self.do_reply_to_comments = True
         self.reply_to_comments_percent = 0
         self.comment_replies = []
         self.photo_comment_replies = []
@@ -4453,12 +4453,13 @@ class InstaPy:
                 self.username, message, "user iteration", "info", self.logger)
 
             validation, details = self.validate_user_call(username)
-            if validation != True:
-                self.logger.info("--> Not a valid user: {}"
-                                 .format(details))
-                self.not_valid_users += 1
-                continue
-
+            # Allow for self usernames for auto-replies
+            if (not username==self.username):
+                if validation != True:
+                    self.logger.info("--> Not a valid user: {}"
+                                     .format(details))
+                    self.not_valid_users += 1
+                    continue
             per_user_liked_comments = 0
             per_user_replied_to_comments = 0
             per_user_used_replies = []

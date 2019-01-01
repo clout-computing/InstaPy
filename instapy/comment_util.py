@@ -173,16 +173,8 @@ def verify_commenting(browser, max, min, mand_words, logger):
 
 
 
-def get_comments_on_post(browser,
-                         owner,
-                         poster,
-                         amount,
-                         post_link,
-                         ignore_users,
-                         randomize,
-                         logger):
+def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users, randomize, logger):
     """ Fetch comments data on posts """
-
     web_address_navigator(browser, post_link)
 
     orig_amount = amount
@@ -202,7 +194,8 @@ def get_comments_on_post(browser,
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../../.."   # efficient location path
+    # comments_block_XPath = "//div/div/h3/../../../.."   # quite an efficient location path
+    comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
     like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
     unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
 
@@ -212,23 +205,27 @@ def get_comments_on_post(browser,
     explicit_wait(browser, "PFL", [], logger, 10)
 
     try:
-        all_comment_like_buttons = browser.find_elements_by_xpath(
-            like_button_full_XPath)
+        all_comment_like_buttons = browser.find_elements_by_xpath(like_button_full_XPath)
         if all_comment_like_buttons:
-            comments_block = browser.find_elements_by_xpath(
-                comments_block_XPath)
+            comments_block = browser.find_elements_by_xpath(comments_block_XPath)
             for comment_line in comments_block:
                 commenter_elem = comment_line.find_element_by_tag_name('a')
                 commenter = extract_text_from_element(commenter_elem)
+                # TODO: why is this so slow?
                 if (commenter and
                     commenter not in [owner, poster, ignore_users] and
-                        commenter not in commenters):
-                    commenters.append(commenter)
+                        commenter not in commenters):     
+                    greater_comment_line = comment_line.find_elements_by_xpath("./..")
+                    is_unliked = ( len(greater_comment_line[0]
+                        .find_elements_by_xpath(".//span/button/span[@aria-label='Like']")) > 0 )
+                    if (is_unliked):
+                        commenters.append(commenter)
+                    else:
+                        continue
                 else:
                     continue
 
-                comment_elem = comment_line.find_elements_by_tag_name(
-                    "span")[0]
+                comment_elem = comment_line.find_elements_by_tag_name("span")[0]
                 comment = extract_text_from_element(comment_elem)
                 if comment:
                     comments.append(comment)
@@ -237,15 +234,11 @@ def get_comments_on_post(browser,
                     continue
 
         else:
-            comment_unlike_buttons = browser.find_elements_by_xpath(
-                unlike_button_full_XPath)
+            comment_unlike_buttons = browser.find_elements_by_xpath(unlike_button_full_XPath)
             if comment_unlike_buttons:
-                logger.info("There are {} comments on this post and all "
-                            "of them are already liked."
-                            .format(len(comment_unlike_buttons)))
+                logger.info("There are {} comments on this post and all of them are already liked.".format(len(comment_unlike_buttons)))
             else:
-                logger.info(
-                    "There are no any comments available on this post.")
+                logger.info("There are no any comments available on this post.")
             return None
 
     except NoSuchElementException:
@@ -263,11 +256,9 @@ def get_comments_on_post(browser,
             random.shuffle(comment_data)
 
         if len(comment_data) < orig_amount:
-            logger.info("Could grab only {} usable comments from this post.."
-                        .format(len(comment_data)))
+            logger.info("Could grab only {} usable comments from this post..".format(len(comment_data)))
         else:
-            logger.info("Grabbed {} usable comments from this post.."
-                        .format(len(comment_data)))
+            logger.info("Grabbed {} usable comments from this post..".format(len(comment_data)))
 
 
         return comment_data
