@@ -4479,7 +4479,7 @@ class InstaPy:
                              polarity="P",
                              agreement=None,
                              subjectivity=None,
-                             confidence=100):
+                             confidence=85):
         """ Set MeaningCloud Sentiment Analysis API configuration """
 
         if license_key is None:
@@ -4721,6 +4721,11 @@ class InstaPy:
                 for commenter, comment in comment_data:
                     if per_post_liked_comments >= comments_per_post:
                         break
+
+                    if reply:
+                        if per_post_replied_to_comments >= num_replies:
+                            print("reach max num replies of {}\n".format(num_replies))
+                            break
 
                     elif (like_failures_tracker["consequent"]["comment_likes"]
                           >= like_failures_tracker["limit"]["comment_likes"]):

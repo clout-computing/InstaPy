@@ -3,6 +3,7 @@
 
 import random
 import emoji
+import sys
 
 from .time_util import sleep
 from .util import update_activity
@@ -168,7 +169,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
     return True, 'Approval'
 
 
-def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users, randomize, logger):
+def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users, randomize, logger, num_replies=sys.maxsize):
     """ Fetch comments data on posts """
     web_address_navigator(browser, post_link)
 
@@ -196,6 +197,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
 
     comments = []
     commenters = []
+    replied_comments = 0
     # wait for page fully load [IMPORTANT!]
     explicit_wait(browser, "PFL", [], logger, 10)
 
@@ -204,17 +206,20 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         if all_comment_like_buttons:
             comments_block = browser.find_elements_by_xpath(comments_block_XPath)
             for comment_line in comments_block:
+                if replied_comments > num_replies:
+                    break
                 commenter_elem = comment_line.find_element_by_tag_name('a')
                 commenter = extract_text_from_element(commenter_elem)
                 # TODO: why is this so slow?
                 if (commenter and
                     commenter not in [owner, poster, ignore_users] and
-                        commenter not in commenters):     
+                        commenter not in commenters):
                     greater_comment_line = comment_line.find_elements_by_xpath("./..")
                     is_unliked = ( len(greater_comment_line[0]
                         .find_elements_by_xpath(".//span/button/span[@aria-label='Like']")) > 0 )
                     if (is_unliked):
                         commenters.append(commenter)
+                        replied_comments += 1
                     else:
                         continue
                 else:
