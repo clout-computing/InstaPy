@@ -17,6 +17,10 @@ from .util import check_authorization
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
+# AWS stuff
+from io import BytesIO
+import boto3
+
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only
@@ -160,10 +164,18 @@ def login_user(browser,
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
 
+    
+
     # try to load cookie from username
     try:
-        for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                       .format(logfolder, username), 'rb')):
+        # Connect S3 and load cookie
+        s3 = boto3.resource('s3')
+        with BytesIO() as data:
+            s3.Bucket('clarus-client-data').download_fileobj('{username}/{username}_cookie.pkl'.format(username=username), data)
+            data.seek(0)
+            cookies = pickle.load(data)
+        
+        for cookie in cookies:
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
