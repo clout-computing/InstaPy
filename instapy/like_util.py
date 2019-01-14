@@ -787,6 +787,46 @@ def verify_liking(browser, max, min, logger):
     return True
 
 
+def get_likes_count(browser, logger):
+    """ Get the amount of existing existing likes """
+    try:
+        likes_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
+            ".count")
+        return likes_count
+
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            update_activity()
+
+            likes_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
+                ".count")
+            return likes_count
+
+        except WebDriverException:
+            try:
+                likes_count = (browser.find_element_by_css_selector(
+                    "section._1w76c._nlmjy > div > a > span").text)
+
+                if likes_count:
+                    likes_count = format_number(likes_count)
+                    return likes_count
+                else:
+                    logger.info(
+                        "Failed to check likes' count  ~empty string\n")
+                    return None
+
+            except NoSuchElementException:
+                logger.info("Failed to check likes' count\n")
+                return None
+
+    return None
+
+
 def like_comment(browser, original_comment_text, logger):
     """ Like the given comment """
     comments_block_XPath = "//div/div/h3/../../../.."  # quite an efficient
