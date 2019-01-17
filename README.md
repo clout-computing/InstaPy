@@ -6,6 +6,9 @@
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 
+FOR CLARUS:
+git pull https://github.com/timgrossmann/InstaPy master
+
 ### Automation Script for “farming” Likes, Comments and Followers on Instagram
 Implemented in Python using the Selenium module.
 
