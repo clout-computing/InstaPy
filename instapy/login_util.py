@@ -16,6 +16,7 @@ from .util import check_authorization
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
 # AWS stuff
 from io import BytesIO
@@ -215,10 +216,13 @@ def login_user(browser,
         "//article//a[text()='Log in']")
 
     if login_elem is not None:
-        (ActionChains(browser)
-         .move_to_element(login_elem)
-         .click()
-         .perform())
+        try:
+            (ActionChains(browser)
+             .move_to_element(login_elem)
+             .click()
+             .perform())
+        except MoveTargetOutOfBoundsException:
+            login_elem.click()
 
         # update server calls
         update_activity()
