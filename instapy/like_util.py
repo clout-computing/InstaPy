@@ -8,6 +8,7 @@ from .util import format_number
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import is_private_profile
+from .util import is_page_available
 from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
@@ -192,8 +193,8 @@ def get_links_for_location(browser,
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
-                            "desired...".format(
-                                location))
+                                "desired:{} found:{}...".format(
+                                location, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)
@@ -355,8 +356,8 @@ def get_links_for_tag(browser,
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
-                            "desired...".format(
-                                tag))
+                            "desired:{} found:{}...".format(
+                                tag, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)
@@ -404,21 +405,27 @@ def get_links_for_username(browser,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
 
-    if "Page Not Found" in browser.title:
+    if not is_page_available(browser, logger):
         logger.error(
             'Instagram error: The link you followed may be broken, or the '
             'page may have been removed...')
         return False
 
     # if private user, we can get links only if we following
-    following, follow_button = get_following_status(browser, 'profile',
-                                                    username, person, None,
-                                                    logger, logfolder)
-    if following == 'Following':
-        following = True
-    is_private = is_private_profile(browser, logger, following)
-    if (is_private is None) or (is_private is True and not following) or (
-            following == 'Blocked'):
+    following_status, follow_button = get_following_status(
+        browser, "profile", username, person, None, logger, logfolder)
+
+    #if following_status is None:
+    #    browser.wait_for_valid_connection(browser, username, logger)
+
+    #if following_status == 'Follow':
+    #    browser.wait_for_valid_authorization(browser, username, logger)
+
+    is_private = is_private_profile(browser, logger, following_status == 'Following')
+    if (is_private is None
+        or (is_private is True and following_status not in ['Following', True])
+        or (following_status == 'Blocked')):
+        logger.info('This user is private and we are not following')
         return False
 
     # Get links
@@ -853,9 +860,16 @@ def like_comment(browser, original_comment_text, logger):
             comment = extract_text_from_element(comment_elem)
 
             if comment and (comment == original_comment_text):
+                # find "Like" span (a direct child of Like button)
+                span_like_elements = comment_line.find_elements_by_xpath(
+                    "//span[@aria-label='Like']")
+                if not span_like_elements:
+                    # this is most likely a liked comment
+                    return True, "success"
+
                 # like the given comment
-                comment_like_button = comment_line.find_element_by_tag_name(
-                    "button")
+                span_like = span_like_elements[0]
+                comment_like_button = span_like.find_element_by_xpath('..')
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button
