@@ -206,13 +206,9 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         if all_comment_like_buttons:
             comments_block = browser.find_elements_by_xpath(comments_block_XPath)
             for comment_line in comments_block:
-<<<<<<< HEAD
                 if replied_comments > num_replies:
                     break
-                commenter_elem = comment_line.find_element_by_tag_name('a')
-=======
                 commenter_elem = comment_line.find_element_by_xpath('//h3/a')
->>>>>>> 1e687e31dbe6ecca556713238be0895826909103
                 commenter = extract_text_from_element(commenter_elem)
                 # TODO: why is this so slow?
                 if (commenter and

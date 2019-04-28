@@ -4875,24 +4875,14 @@ class InstaPy:
             highlight_print(
                 self.username, message, "user iteration", "info", self.logger)
 
-<<<<<<< HEAD
-            validation, details = self.validate_user_call(username)
-            # Allow for self usernames for auto-replies
-            if (not username==self.username):
-                if validation != True:
-=======
             if username != self.username:
                 validation, details = self.validate_user_call(username)
                 if validation is not True:
->>>>>>> 1e687e31dbe6ecca556713238be0895826909103
                     self.logger.info("--> Not a valid user: {}"
                                      .format(details))
                     self.not_valid_users += 1
                     continue
-<<<<<<< HEAD
-=======
 
->>>>>>> 1e687e31dbe6ecca556713238be0895826909103
             per_user_liked_comments = 0
             per_user_replied_to_comments = 0
             per_user_used_replies = []

@@ -21,6 +21,7 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 # AWS stuff
 from io import BytesIO
 import boto3
+from botocore.exceptions import ClientError
 
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
@@ -178,7 +179,7 @@ def login_user(browser,
         for cookie in cookies:
             browser.add_cookie(cookie)
             cookie_loaded = True
-    except (WebDriverException, OSError, IOError):
+    except (WebDriverException, OSError, IOError, ClientError):
         print("Cookie file not found, creating cookie...")
 
     # force refresh after cookie load or check_authorization() will FAIL
