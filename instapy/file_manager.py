@@ -223,7 +223,10 @@ def get_chromedriver_location():
         # only import from this package when necessary
         from instapy_chromedriver import binary_path
 
+        print("--> Originally looked for chrome driver in {}".format(CD))
+
         CD = binary_path
+        print("--> Wasn't found! Now looking in {}".format(CD))
         chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
         message = "Using built in instapy-chromedriver executable (version {})".format(chrome_version)
         highlight_print(Settings.profile["name"],
@@ -231,6 +234,9 @@ def get_chromedriver_location():
                         "workspace",
                         "info",
                         Settings.logger)
+        
+        if not file_exists(CD):
+            print("--> Fatal error! No chromedriver in {}!".format(CD))
 
     # save updated path into settings
     Settings.chromedriver_location = CD
