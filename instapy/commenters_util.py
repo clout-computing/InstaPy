@@ -23,6 +23,7 @@ from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 
+from .xpath import read_xpath
 
 def check_exists_by_xpath(browser, xpath):
     try:
@@ -48,20 +49,35 @@ def extract_post_info(browser):
     comments = []
 
     user_commented_list = []
-    try:
-        if browser.find_element_by_xpath("//div/ul"):
-            comment_list = browser.find_element_by_xpath("//div/ul")
-            comments = comment_list.find_elements_by_tag_name('li')
-    
-            if len(comments) > 1:
-                # load hidden comments
-                more_comments = 0
-    
-                while (" comments" in comments[1].text):
+    if browser.find_element_by_xpath(read_xpath(extract_post_info.__name__,"comment_list")):
+        comment_list = browser.find_element_by_xpath(read_xpath(extract_post_info.__name__,"comment_list"))
+        comments = comment_list.find_elements_by_tag_name(read_xpath(extract_post_info.__name__,"comments"))
+
+        if len(comments) > 1:
+            # load hidden comments
+            more_comments = 0
+
+            while (" comments" in comments[1].text):
+                more_comments += 1
+                print("loading more comments.")
+                load_more_comments_element = browser.find_element_by_xpath(
+                    read_xpath(extract_post_info.__name__,"load_more_comments_element"))
+                click_element(browser, load_more_comments_element)
+                # comment_list = post.find_element_by_tag_name('ul')
+                comments = comment_list.find_elements_by_tag_name('li')
+
+                if more_comments > 10:
+                    print("Won't load more than that, moving on..")
+                    break
+
+            # if post autor didnt write description, more comments text is
+            # in first comment
+            if more_comments == 0:
+                while (" comments" in comments[0].text):
                     more_comments += 1
                     print("loading more comments.")
                     load_more_comments_element = browser.find_element_by_xpath(
-                        "//div/ul/li[2]/button")
+                        read_xpath(extract_post_info.__name__,"load_more_comments_element_alt"))
                     click_element(browser, load_more_comments_element)
                     # comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
@@ -176,12 +192,10 @@ def extract_information(browser, username, daysold, max_pic):
                     print("clicking on one photo..")
                     try:
                         one_pic_elem = browser.find_element_by_xpath(
-                            "//section/main/article/div[1]/div/div[10]/div["
-                            "3]/a/div")
+                            read_xpath(extract_information.__name__,"one_pic_elem"))
                         click_element(browser, one_pic_elem)
                     except Exception:
                         print("Error: cant click on the photo..")
-                        pass
 
                     sleep(1.5)
 
@@ -189,7 +203,7 @@ def extract_information(browser, username, daysold, max_pic):
                     # our time effectively and look less suspicious
                     try:
                         like_element = browser.find_elements_by_xpath(
-                            "//a[@role='button']/span[text()='Like']/..")
+                            read_xpath(extract_information.__name__,"like_element"))
                         click_element(browser, like_element[0])
                         print("clicking like..")
                     except Exception:
@@ -204,7 +218,7 @@ def extract_information(browser, username, daysold, max_pic):
 
                     print("closing overlay")
                     close_overlay = browser.find_element_by_xpath(
-                        "//div/div[@role='dialog']")
+                        read_xpath(extract_information.__name__,"close_overlay"))
                     click_element(browser, close_overlay)
 
                     print("date of this picture was:", date_of_pic)
@@ -400,7 +414,7 @@ def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
                           'https://www.instagram.com/' + username + '/')
     sleep(1)
 
-    photos_a_elems = browser.find_elements_by_xpath("//div/a")
+    photos_a_elems = browser.find_elements_by_xpath(read_xpath(get_photo_urls_from_profile.__name__,"photos_a_elems"))
 
     links = []
     for photo_element in photos_a_elems:
@@ -417,8 +431,3 @@ def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
           links[:links_to_return_amount])
     sleep(1)
     return links[:links_to_return_amount]
-    # except:
-    # Code below is unreachable - perhaps get rid of?
-    print("Error: Couldnt get pictures links.")
-    return []
-

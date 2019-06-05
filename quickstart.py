@@ -13,7 +13,6 @@ set_workspace(path=None)
 session = InstaPy(username="thekalefactory", password="Buckethead2010!")
 
 with smart_run(session):
-    """ Activity flow """
     # general settings
     # session.set_dont_include(["friend1", "friend2", "friend3"])
 
