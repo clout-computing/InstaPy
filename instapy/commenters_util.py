@@ -38,11 +38,11 @@ def remove_duplicates_preserving_order(seq):
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
-
 def get_post_publish_date(browser):
     date_time = browser.find_element_by_tag_name('time').get_attribute(
-            "datetime")
+        "datetime")
     return date_time
+
 
 def extract_post_info(browser):
     """Get the information from the current post"""
@@ -81,43 +81,25 @@ def extract_post_info(browser):
                     click_element(browser, load_more_comments_element)
                     # comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
-    
+
                     if more_comments > 10:
                         print("Won't load more than that, moving on..")
                         break
-    
-                # if post autor didnt write description, more comments text is
-                # in first comment
-                if more_comments == 0:
-                    while (" comments" in comments[0].text):
-                        more_comments += 1
-                        print("loading more comments.")
-                        load_more_comments_element = browser.find_element_by_xpath(
-                            "//div/ul/li[1]/button")
-                        click_element(browser, load_more_comments_element)
-                        # comment_list = post.find_element_by_tag_name('ul')
-                        comments = comment_list.find_elements_by_tag_name('li')
-    
-                        if more_comments > 10:
-                            print("Won't load more than that, moving on..")
-                            break
-    
-                # adding who commented into user_commented_list
-                try:
-                    for comm in comments:
-                        user_commented = comm.find_element_by_tag_name(
-                            'a').get_attribute("href").split('/')
-                        user_commented_list.append(user_commented[3])
-    
-                except Exception:
-                    print("cant get comments")
-    
-            print(len(user_commented_list), " comments.")
-        date_time = browser.find_element_by_tag_name('time').get_attribute(
-            "datetime")
-    except Exception as e:
-        print(e)
-        print("ERROR WITH EXTRACTING POST INFO")
+
+            # adding who commented into user_commented_list
+            try:
+                for comm in comments:
+                    user_commented = comm.find_element_by_tag_name(
+                        'a').get_attribute("href").split('/')
+                    user_commented_list.append(user_commented[3])
+
+            except Exception:
+                print("cant get comments")
+
+        print(len(user_commented_list), " comments.")
+    date_time = browser.find_element_by_tag_name('time').get_attribute(
+        "datetime")
+
     return user_commented_list, date_time
 
 
