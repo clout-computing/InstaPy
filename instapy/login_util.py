@@ -171,7 +171,10 @@ def login_user(browser,
         # Connect S3 and load cookie
         s3 = boto3.resource('s3')
         with BytesIO() as data:
-            s3.Bucket('clarus-client-data').download_fileobj('{username}/{username}_cookie.pkl'.format(username=username), data)
+            try:
++                s3.Bucket('clarus-client-data').download_fileobj('{username}/{username}_cookie.pkl'.format(username=username), data)
++            except:
++                s3.Bucket('clarus-bot-data').download_fileobj('{username}/{username}_cookie.pkl'.format(username=username), data)
             data.seek(0)
             cookies = pickle.load(data)
         
