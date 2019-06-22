@@ -24,8 +24,6 @@ import boto3
 from botocore.exceptions import ClientError
 from .xpath import read_xpath
 
-ACCESS_KEY = "AKIAWGCLC7RZO3GIMWFG"
-SECRET_KEY = "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"
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only
