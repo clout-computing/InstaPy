@@ -208,7 +208,25 @@ def login_user(browser,
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
 
+    client = boto3.client('cognito-idp')
     
+    response = client.admin_get_user(
+        UserPoolId=UserPoolID,
+        Username=UserEmail
+    )
+    print(response)
+    
+    # send signal to frontend
+    response = client.admin_update_user_attributes(
+        UserPoolId='us-east-2_khYo86UYW',
+        Username='cooperwang1994@gmail.com',
+        UserAttributes=[
+            {
+                'Name': 'custom:toRequiredCodeLine',
+                'Value': 'login'
+            },
+        ]
+    )
 
     # try to load cookie from username
     try:
