@@ -112,10 +112,10 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(choice))
-    security_code = input('Type the security code here: ')
 
 
-    ########### below is cooper's change
+    ########### below is cooper's change, to replace input
+    # security_code = input('Type the security code here: ')
     client = boto3.client('cognito-idp')
     
     response = client.admin_get_user(
