@@ -25,6 +25,9 @@ from botocore.exceptions import ClientError
 from .xpath import read_xpath
 
 
+from config import UserEmail
+from config import UserPoolID
+
 def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only
     enabled
@@ -110,6 +113,46 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(choice))
     security_code = input('Type the security code here: ')
+
+
+    ########### below is cooper's change
+    client = boto3.client('cognito-idp')
+    
+    response = client.admin_get_user(
+        UserPoolId=UserPoolID,
+        Username=UserEmail
+    )
+    print(response)
+    
+    # send signal to frontend
+    response = client.admin_update_user_attributes(
+        UserPoolId='us-east-2_khYo86UYW',
+        Username='cooperwang1994@gmail.com',
+        UserAttributes=[
+            {
+                'Name': 'custom:toRequiredCodeLine',
+                'Value': 'yes'
+            },
+        ]
+    )
+    
+    # check security code
+    checkTimes = 0;
+    security_code = '000000'
+    # while(true):
+    #     sleep(3)
+    #     response = client.admin_get_user(
+    #         UserPoolId='us-east-2_khYo86UYW',
+    #         Username='cooperwang1994@gmail.com'
+    #     )
+    #     checkTimes = checkTimes + 1
+    #     if(checkTimes > 300):
+    #       break
+    response = client.admin_get_user(
+        UserPoolId='us-east-2_khYo86UYW',
+        Username='cooperwang1994@gmail.com'
+    )
+    print(response['UserAttributes'])
 
     security_code_field = browser.find_element_by_xpath((
         read_xpath(bypass_suspicious_login.__name__,"security_code_field")))
