@@ -114,7 +114,12 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     print('A security code was sent to your {}'.format(choice))
 
 
-    ########### below is cooper's change, to replace input
+
+    ######################### this is start of cooper change ########################
+    
+    
+    
+    
     # security_code = input('Type the security code here: ')
     client = boto3.client('cognito-idp')
     
@@ -126,8 +131,8 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     
     # send signal to frontend
     response = client.admin_update_user_attributes(
-        UserPoolId='us-east-2_khYo86UYW',
-        Username='cooperwang1994@gmail.com',
+        UserPoolId=UserPoolID,
+        Username=UserEmail,
         UserAttributes=[
             {
                 'Name': 'custom:toRequiredCodeLine',
@@ -139,20 +144,44 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     # check security code
     checkTimes = 0;
     security_code = '000000'
-    # while(true):
-    #     sleep(3)
-    #     response = client.admin_get_user(
-    #         UserPoolId='us-east-2_khYo86UYW',
-    #         Username='cooperwang1994@gmail.com'
-    #     )
-    #     checkTimes = checkTimes + 1
-    #     if(checkTimes > 300):
-    #       break
+    while(1):
+        sleep(3)
+        response = client.admin_get_user(
+            UserPoolId=UserPoolID,
+            Username=UserEmail
+        )
+        checkTimes = checkTimes + 1
+        response = client.admin_get_user(
+            UserPoolId=UserPoolID,
+            Username=UserEmail
+        )
+        security_code = response['UserAttributes'][4]['Value']
+        print("check time add one")
+        if(checkTimes > 100 or security_code != '000000'):
+            response = client.admin_update_user_attributes(
+                UserPoolId=UserPoolID,
+                Username=UserEmail,
+                UserAttributes=[
+                    {
+                        'Name': 'custom:securityCode',
+                        'Value': security_code
+                    },
+                ]
+            )
+            break
+        
     response = client.admin_get_user(
-        UserPoolId='us-east-2_khYo86UYW',
-        Username='cooperwang1994@gmail.com'
+        UserPoolId=UserPoolID,
+        Username=UserEmail
     )
-    print(response['UserAttributes'])
+    print(response['UserAttributes'][4]['Value'])
+    print(security_code)
+    
+    
+    ######################### this is end of cooper change ########################
+    
+
+
 
     security_code_field = browser.find_element_by_xpath((
         read_xpath(bypass_suspicious_login.__name__,"security_code_field")))
@@ -208,18 +237,15 @@ def login_user(browser,
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
 
-    client = boto3.client('cognito-idp')
     
-    response = client.admin_get_user(
-        UserPoolId=UserPoolID,
-        Username=UserEmail
-    )
-    print(response)
+
+    ######################### this is start of cooper change ########################
+    
     
     # send signal to frontend
     response = client.admin_update_user_attributes(
-        UserPoolId='us-east-2_khYo86UYW',
-        Username='cooperwang1994@gmail.com',
+        UserPoolId=UserPoolID,
+        Username=UserEmail,
         UserAttributes=[
             {
                 'Name': 'custom:toRequiredCodeLine',
@@ -227,6 +253,9 @@ def login_user(browser,
             },
         ]
     )
+
+    
+    ######################### this is end of cooper change ########################
 
     # try to load cookie from username
     try:
