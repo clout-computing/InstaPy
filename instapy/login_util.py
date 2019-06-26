@@ -241,7 +241,7 @@ def login_user(browser,
 
     ######################### this is start of cooper change ########################
     
-    
+    client = boto3.client('cognito-idp')
     # send signal to frontend
     response = client.admin_update_user_attributes(
         UserPoolId=UserPoolID,
