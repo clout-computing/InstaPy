@@ -81,6 +81,43 @@ def get_main_element(browser, link_elems, skip_top_posts):
     return main_elem
 
 
+def get_likes_count(browser, logger):
+    try:
+        likes_count = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_like.count"
+        )
+
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            update_activity(browser, state=None)
+
+            likes_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
+                ".count"
+            )
+
+        except WebDriverException:
+            try:
+                likes_count = browser.find_element_by_css_selector(
+                    "section._1w76c._nlmjy > div > a > span"
+                ).text
+
+                if likes_count:
+                    likes_count = format_number(likes_count)
+                else:
+                    logger.info("Failed to check likes' count  ~empty string\n")
+                    return None
+
+            except NoSuchElementException:
+                logger.info("Failed to check likes' count\n")
+                return None
+
+    return likes_count
+
+
 def get_links_for_location(
     browser, location, amount, logger, media=None, skip_top_posts=True
 ):

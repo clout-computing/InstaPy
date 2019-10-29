@@ -1834,10 +1834,12 @@ def is_page_available(browser, logger):
 
 
 @contextmanager
-def smart_run(session, threaded=False):
+def smart_run(session, threaded=False, login=True):
     try:
-        session.login()
+        if login:
+            session.login()
         yield
+        
     except NoSuchElementException:
         # The problem is with a change in IG page layout
         log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))

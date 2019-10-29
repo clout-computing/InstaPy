@@ -23,6 +23,21 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
 from .xpath import read_xpath
 
+# AWS stuff
+from io import BytesIO
+import boto3
+import boto3.session
+from botocore.exceptions import ClientError
+
+cred = boto3.Session().get_credentials()
+ACCESS_KEY = "AKIAWGCLC7RZGHRVVYXL"
+SECRET_KEY = "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"
+
+s3client = boto3.client('s3', 
+            aws_access_key_id = ACCESS_KEY, 
+            aws_secret_access_key = SECRET_KEY
+           )
+
 
 def bypass_suspicious_login(
     browser, logger, logfolder, bypass_security_challenge_using
@@ -280,15 +295,18 @@ def login_user(
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
-
-    # try to load cookie from username
+    
+    print(username)
+    
     try:
-        for cookie in pickle.load(
-            open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
-        ):
+        response = s3client.get_object(Bucket='clarus-bot-data', Key='{username}/{username}_cookie.pkl'.format(username=username))
+        body = response['Body'].read()
+        cookies = pickle.loads(body)
+        for cookie in cookies:
             browser.add_cookie(cookie)
             cookie_loaded = True
-    except (WebDriverException, OSError, IOError):
+    except (WebDriverException, OSError, IOError, ClientError) as e:
+        print("ERROR: {}".format(str(e)))
         print("Cookie file not found, creating cookie...")
 
     # force refresh after cookie load or check_authorization() will FAIL
