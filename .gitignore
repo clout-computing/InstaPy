@@ -2,6 +2,10 @@
 googlecl-pylint.rc.txt
 assets/chromedriver
 
+# config
+config.py
+*config.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
