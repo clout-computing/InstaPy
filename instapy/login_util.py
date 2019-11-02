@@ -15,7 +15,7 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
-from .config import *
+from .instapy-config import *
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
