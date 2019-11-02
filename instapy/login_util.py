@@ -15,6 +15,7 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
+from .config import *
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -30,8 +31,6 @@ import boto3.session
 from botocore.exceptions import ClientError
 
 cred = boto3.Session().get_credentials()
-ACCESS_KEY = "AKIAWGCLC7RZGHRVVYXL"
-SECRET_KEY = "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"
 
 s3client = boto3.client('s3', 
             aws_access_key_id = ACCESS_KEY, 
