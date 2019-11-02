@@ -15,7 +15,7 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
-from .instapy-config import *
+from .instapy_config import *
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -31,6 +31,13 @@ import boto3.session
 from botocore.exceptions import ClientError
 
 cred = boto3.Session().get_credentials()
+
+try:
+    AK = ACCESS_KEY
+    SK = SECRET_KEY
+except:
+    print('''ERROR setting access keys from instapy-config.InstaPy -
+        did you remember to change this file?''')
 
 s3client = boto3.client('s3', 
             aws_access_key_id = ACCESS_KEY, 
