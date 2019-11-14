@@ -522,6 +522,9 @@ def get_links_for_username(
         )
         amount = posts_count
 
+    # TODO: remove?
+    sleep(1)
+
     while len(links) < amount:
         initial_links = links
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -605,8 +608,8 @@ def check_link(
 
     except WebDriverException:  # handle the possible `entry_data` error
         try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+            # browser.execute_script("location.reload()")
+            # update_activity(browser, state=None)
 
             post_page = browser.execute_script(
                 "return window._sharedData.entry_data.PostPage[0]"
@@ -934,8 +937,8 @@ def verify_liking(browser, maximum, minimum, logger):
 
     except WebDriverException:
         try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+            # browser.execute_script("location.reload()")
+            # update_activity(browser, state=None)
 
             likes_count = browser.execute_script(
                 "return window._sharedData.entry_data."
