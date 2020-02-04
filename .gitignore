@@ -12,6 +12,9 @@ __pycache__/
 quickstart.py
 docker_quickstart.py
 
+instapy/instapy_config.py
+*instapy_config.py
+
 # C extensions
 *.so
 
