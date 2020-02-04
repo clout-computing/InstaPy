@@ -312,7 +312,7 @@ def login_user(
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError, ClientError) as e:
-        print("ERROR: {}".format(str(e)))
+        print("ERROR for {}: {}".format(username, str(e)))
         print("Cookie file not found, creating cookie...")
 
     # force refresh after cookie load or check_authorization() will FAIL
