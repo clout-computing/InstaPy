@@ -32,18 +32,19 @@ from botocore.exceptions import ClientError
 
 cred = boto3.Session().get_credentials()
 
-try:
-    AK = ACCESS_KEY
-    SK = SECRET_KEY
-except:
-    print('''ERROR setting access keys from instapy-config.InstaPy -
-        did you remember to change this file?''')
+# try:
+#     AK = ACCESS_KEY
+#     SK = SECRET_KEY
+# except:
+#     print('''ERROR setting access keys from instapy-config.InstaPy -
+#         did you remember to change this file?''')
 
-s3client = boto3.client('s3', 
-            aws_access_key_id = ACCESS_KEY, 
-            aws_secret_access_key = SECRET_KEY
-           )
+# s3client = boto3.client('s3', 
+#             aws_access_key_id = ACCESS_KEY, 
+#             aws_secret_access_key = SECRET_KEY
+#            )
 
+s3client = boto3.client('s3')
 
 def bypass_suspicious_login(
     browser, logger, logfolder, bypass_security_challenge_using
