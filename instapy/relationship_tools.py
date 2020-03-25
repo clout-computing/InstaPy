@@ -24,6 +24,7 @@ def get_followers(
     store_locally,
     logger,
     logfolder,
+    no_wait=False,
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -277,18 +278,21 @@ def get_followers(
         if grab == "full":
             relationship_data[username].update({"all_followers": all_followers})
 
-    sleep_t = sc_rolled * 6
-    sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
-    sleep_n, sleep_s = (
-        (sleep_t / 60, "minutes") if sleep_t / 60 >= 1 else (sleep_t, "seconds")
-    )
-    sleep_n = truncate_float(sleep_n, 4)
+    if not no_wait:
 
-    print("")
-    logger.info(
-        "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
-    )
-    sleep(sleep_t)
+        sleep_t = sc_rolled * 6
+        sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
+        sleep_n, sleep_s = (
+            (sleep_t / 60, "minutes") if sleep_t / 60 >= 1 else (sleep_t, "seconds")
+        )
+        sleep_n = truncate_float(sleep_n, 4)
+
+        print("")
+        logger.info(
+            "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
+        )
+        sleep(sleep_t)
+        
     logger.info("Yawn :] let's go!\n")
 
     return all_followers

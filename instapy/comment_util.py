@@ -43,8 +43,9 @@ def open_comment_section(browser, logger):
         "\t~may cause issues with browser windows of smaller widths"
     )
 
+    print(read_xpath(open_comment_section.__name__, "comment_elem"))
     comment_elem = browser.find_elements_by_xpath(
-        read_xpath(open_comment_section.__name__, "comment_elem")
+        "//*[@aria-label='Comment']"
     )
 
     if len(comment_elem) > 0:
@@ -64,7 +65,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     if quota_supervisor("comments") == "jump":
         return False, "jumped"
 
-    rand_comment = random.choice(comments).format(username)
+    rand_comment = random.choice(comments)# .format(username)
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
@@ -78,6 +79,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             # wait, to avoid crash
             sleep(2)
             comment_input = get_comment_input(browser)
+            print(comment_input)
             # below, an extra space is added to force
             # the input box to update the reactJS core
             comment_to_be_sent = rand_comment
@@ -102,13 +104,13 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
                 .perform()
             )
 
-            update_activity(
-                browser,
-                action="comments",
-                state=None,
-                logfolder=logfolder,
-                logger=logger,
-            )
+            # update_activity(
+            #     browser,
+            #     action="comments",
+            #     state=None,
+            #     logfolder=logfolder,
+            #     logger=logger,
+            # )
 
             if blacklist["enabled"] is True:
                 action = "commented"

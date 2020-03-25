@@ -127,7 +127,7 @@ def set_selenium_local_session(
     browser.implicitly_wait(page_delay)
 
     # set mobile viewport (iPhone X)
-    browser.set_window_size(375, 812)
+    browser.set_window_size(1500, 812)
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)
