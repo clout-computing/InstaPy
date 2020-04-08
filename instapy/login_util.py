@@ -326,7 +326,10 @@ def login_user(
         browser, username, "activity counts", logger, False
     )
     if login_state is True:
-        dismiss_notification_offer(browser, logger)
+        try:
+            dismiss_notification_offer(browser, logger)
+        except Exception as e:
+            print("Couldn't dismiss notification!")
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
